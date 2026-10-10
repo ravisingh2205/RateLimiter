@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: ratelimiter-platform
+  datasource:
+    # In-memory H2 in PostgreSQL mode: zero setup. The "infra" profile switches to real PostgreSQL.
+    url: jdbc:h2:mem:ratelimiter;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 200ms          # keep the hot path fast: fail quickly and let fail-open/fail-closed decide
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+
+ratelimit:
+  store: ${RATELIMIT_STORE:memory}           # memory | redis
+  rule-refresh-millis: 30000
+  trust-forwarded-for: false
+  admin-token: ${ADMIN_TOKEN:changeme}
+  record-events: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  health:
+    redis:
+      enabled: false                          # enabled in the "infra" profile
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

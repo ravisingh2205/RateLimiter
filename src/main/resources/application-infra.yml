@@ -1,0 +1,16 @@
+# Production-like profile: PostgreSQL for rules/audit, Redis for limiter state.
+#   docker compose up -d postgres redis
+#   mvn spring-boot:run -Dspring-boot.run.profiles=infra
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ratelimiter}
+    username: ${DB_USER:ratelimiter}
+    password: ${DB_PASSWORD:ratelimiter}
+
+ratelimit:
+  store: redis
+
+management:
+  health:
+    redis:
+      enabled: true
